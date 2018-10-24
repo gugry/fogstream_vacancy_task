@@ -1,0 +1,20 @@
+{% extends 'base_app/base.html' %}
+{% load static  %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<div id="main_block">
+    <h2>Login</h2>
+    <form id="login_form" method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+    </form>
+    <button >Login</button>
+    <p id="error_message"></p>
+</div>
+{% endblock %}
+
+{% block javascript %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="{% static 'base_app/login.js' %}"></script>
+{% endblock %}

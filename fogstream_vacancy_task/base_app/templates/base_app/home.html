@@ -1,0 +1,14 @@
+{% extends 'base_app/base.html' %}
+
+{% block title %}Home{% endblock %}
+
+{% block content %}
+{% if user.is_authenticated %}
+  <p>{{ user.username }} <a href="logout">logout</a></p>
+  {% include "base_app/message.html" %}
+{% else %}
+  <a href="login">login</a><br/>
+  <a href="registration">registration</a>
+{% endif %}
+{% endblock %}
+

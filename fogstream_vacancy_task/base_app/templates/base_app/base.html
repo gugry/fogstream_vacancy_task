@@ -1,0 +1,18 @@
+{% load static  %}
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>login</title>
+</head>
+<body>
+ <main id="main_block">
+    {% block content %}
+    {% endblock %}
+  </main>
+{% block javascript %}
+{% endblock %}
+<script  src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="{% static 'base_app/message.js' %}"></script>
+</body>
+</html>

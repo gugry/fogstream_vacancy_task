@@ -1,0 +1,8 @@
+{% load static  %}
+<form id="message_form" action="" method="post">
+    {% csrf_token %}
+    {{ message_form }}
+    <input type="button" id="clickme" value="Отправить" />
+</form>
+<p id="message_result"></p>
+

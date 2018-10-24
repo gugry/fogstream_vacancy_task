@@ -1,0 +1,21 @@
+{% extends 'base_app/base.html' %}
+{% load static  %}
+{% block title %}Login{% endblock %}
+
+{% block content %}
+<p id = 'error_message'></p>
+<div id="reg_block">
+    <form name="reg" method="post" action="">
+        {% csrf_token %}
+        {{form.as_p}}
+    </form>
+</div>
+<button> Зарегистрироваться </button>
+<p id = "message_result"></p>
+{% endblock %}
+
+{% block javascript %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script type="text/javascript" src="{% static 'base_app/reg_validates.js' %}"></script>
+<script type="text/javascript" src="{% static 'base_app/registration.js' %}"></script>
+{% endblock %}
