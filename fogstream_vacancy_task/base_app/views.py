@@ -1,60 +1,44 @@
-from __future__ import unicode_literals
-from django.contrib.auth.models import User
-from django.contrib.auth import  login
-from django.http import JsonResponse
-from django.shortcuts import render
-from .forms import MessageForm
-from django.core.mail import send_mail, EmailMessage
 from django.conf import settings
-from django.http import HttpResponse
+from django.contrib.auth import login
+from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
+from django.core.mail import EmailMessage
+from django.http import HttpResponse, JsonResponse
+from django.shortcuts import render
+from django.views import View
+
+from .forms import MessageForm
 
 
 def index(request):
     return render(request, 'base_app/home.html', {'message_form': MessageForm})
 
-def reg_user(request):
-    form = UserCreationForm(request.POST or None)
-    if form.is_valid():
+class RegUser(View):
+
+    def get(self, request, *args, **kwargs):
+        form = UserCreationForm(request.POST or None)
         if request.is_ajax():
-            user = form.save()
-            login(request, user)
-            data = {
-                'result': 'Успешно!',
-            }
-            return JsonResponse(data)
+            return JsonResponse(form.errors, status=400)
+        return render(request, 'registration/registration.html', {'form': form})
+
+    def post(self, request):
+        form = UserCreationForm(request.POST or None)
+        response = HttpResponse('not Ajax')
+        if form.is_valid():
+            if request.is_ajax():
+                user = form.save()
+                login(request, user)
+                data = {
+                    'result': 'Успешно!',
+                }
+                response = JsonResponse(data)
         else:
-            return HttpResponse('not Ajax')
-    if request.is_ajax():
-        return JsonResponse(form.errors, status=400)
-    return render(request, 'registration/registration.html', {'form': form})
-
-
-def reg_passwords_validate(request):
-    password_1 = request.GET.get('password1', None)
-    password_2 = request.GET.get('password2', None)
-    data = {
-        'equal': password_1 == password_2,
-        'not_equal': password_1 != password_2,
-             }
-    if data['not_equal']:
-        data['error_message'] = 'Пароли не совпадают.'
-    if data['equal']:
-        data['error_message'] = ''
-    return JsonResponse(data)
-
-
-def reg_username_validate(request):
-    username = request.GET.get('username', None)
-    data = {'is_taken': User.objects.filter(username__iexact=username).exists(),
-            'is_free': not User.objects.filter(username__iexact=username).exists()}
-
-    if data['is_taken']:
-        data['error_message'] = 'В системе уже есть пользователь с таким иминем.'
-    if data['is_free']:
-        data['error_message'] = ''
-    return JsonResponse(data)
-
+            err_list = []
+            for key in form.errors.as_data().keys():
+                err_list.append( str(form.errors.as_data()[key][0])[2:-2])
+            response = JsonResponse({'result':err_list})
+        return response
 
 def username_login(request):
     username = request.GET.get('username', None)
@@ -69,9 +53,11 @@ def username_login(request):
 
     return JsonResponse(data)
 
-
+@login_required
 def message_for_admin(request, saved=None):
     superuser_email = User.objects.filter(is_superuser=True).values_list('email')
+    superusers = User.objects.all()
+    print(superusers )
     if request.method == 'POST':
         form = MessageForm(request.POST)
         if form.is_valid():

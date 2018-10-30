@@ -8,8 +8,8 @@
     <form id="login_form" method="post">
       {% csrf_token %}
       {{ form.as_p }}
+      <button type="submit">Login</button>
     </form>
-    <button >Login</button>
     <p id="error_message"></p>
 </div>
 {% endblock %}
